@@ -57,7 +57,8 @@ class WaypointUpdater(object):
             rate.sleep()
 
     def get_closest_waypoint_idx(self):
-        """get the index of closest waypoint in front of current car position"""
+        # Implementation from walkthrough
+        """get the index of closest waypoint ahead of current car position"""
         x = self.pose.pose.position.x
         y = self.pose.pose.position.y
 
@@ -81,6 +82,7 @@ class WaypointUpdater(object):
         return closest_idx
 
     def publish_waypoints(self, closest_waypoint_index):
+        # Implementation from walkthrough
         lane = Lane()
         lane.header = self.base_waypoints.header
         lane.waypoints = self.base_waypoints.waypoints[closest_waypoint_index:closest_waypoint_index + LOOKAHEAD_WPS]
