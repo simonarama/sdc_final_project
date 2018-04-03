@@ -19,6 +19,9 @@ class WayPoints:
             self.waypoints_2d = [[waypoint.pose.pose.position.x, waypoint.pose.pose.position.y] for waypoint in waypoints.waypoints]
             self.waypoint_tree = KDTree(self.waypoints_2d)
 
+    def get_num_waypoints(self):
+        return len(self.base_waypoints.waypoints)
+
     def get_closest_waypoint_idx(self, x, y):
         """get the index of closest waypoint ahead of position(x, y)"""
         # get the index of the closest waypoint of current pose
