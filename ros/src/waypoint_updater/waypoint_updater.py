@@ -9,7 +9,9 @@ from std_msgs.msg import Int32
 from styx_msgs.msg import Lane, Waypoint
 
 from scipy.spatial import KDTree
+
 from common.waypoints import WayPoints
+from common import utils
 
 '''
 This node will publish waypoints from the car's current position to some `x` distance ahead.
@@ -52,8 +54,8 @@ class WaypointUpdater(object):
         rate = rospy.Rate(50)
         while not rospy.is_shutdown():
             if self.pose and self.waypoints.has_waypoints():
-                x = self.get_pose_x(self.pose)
-                y = self.get_pose_y(self.pose)
+                x = utils.get_pose_x(self.pose)
+                y = utils.get_pose_y(self.pose)
                 closest_waypoint_idx = self.waypoints.get_closest_waypoint_idx(x, y)
                 self.publish_waypoints(closest_waypoint_idx)
             rate.sleep()
@@ -99,12 +101,6 @@ class WaypointUpdater(object):
     def obstacle_cb(self, msg):
         # TODO: Callback for /obstacle_waypoint message. We will implement it later
         pass
-
-    def get_pose_x(self, pose):
-        return pose.pose.position.x
-
-    def get_pose_y(self, pose):
-        return pose.pose.position.y
 
     def get_waypoint_velocity(self, waypoint):
         return waypoint.twist.twist.linear.x
