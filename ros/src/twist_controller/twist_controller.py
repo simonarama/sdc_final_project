@@ -38,7 +38,7 @@ class Controller(object):
         ki = 0.1
         kd = 0.0
         min_throttle = 0.0
-        max_throttle = 0.2
+        max_throttle = 0.3
         self.throttle_controller = PID(kp=kp, ki=ki, kd=kd, mn=min_throttle, mx=max_throttle)
 
         # init velocity low pass filter, use low pass filter to filter out high frequency noise in velocity

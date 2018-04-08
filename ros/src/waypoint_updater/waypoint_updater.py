@@ -29,7 +29,7 @@ TODO (for Yousuf and Aaron): Stopline location for each traffic light.
 '''
 
 LOOKAHEAD_WPS = 200 # Number of waypoints we will publish. You can change this number
-MAX_DECEL = 10
+MAX_DECEL = 5
 
 class WaypointUpdater(object):
     def __init__(self):
@@ -65,9 +65,9 @@ class WaypointUpdater(object):
         self.final_waypoints_pub.publish(lane)
 
     def generate_lane(self, closest_waypoint_idx):
-        fastest_waypoint_idx = closest_waypoint_idx + LOOKAHEAD_WPS
-        lane = self.waypoints.get_lane_with_waypoints(closest_waypoint_idx, fastest_waypoint_idx)
-        if self.stopline_wp_idx == -1 or self.stopline_wp_idx >= fastest_waypoint_idx:
+        farthest_waypoint_idx = closest_waypoint_idx + LOOKAHEAD_WPS
+        lane = self.waypoints.get_lane_with_waypoints(closest_waypoint_idx, farthest_waypoint_idx)
+        if self.stopline_wp_idx == -1 or self.stopline_wp_idx >= farthest_waypoint_idx:
             return lane
 
         lane.waypoints = self.decelerate_waypoints(lane.waypoints, closest_waypoint_idx)
@@ -78,15 +78,22 @@ class WaypointUpdater(object):
         for i, wp in enumerate(waypoints):
             p = Waypoint()
             p.pose = wp.pose
-
             stop_waypoint_idx = max(self.stopline_wp_idx - closest_waypoint_idx - 2, 0)
             dist = self.distance(waypoints, i, stop_waypoint_idx)
-            vel = math.sqrt(2 * MAX_DECEL * dist)
-            if vel < 1.0:
+            
+            # vel = math.sqrt(2 * MAX_DECEL * dist)
+            # vel = 11.1 * dist / 12.32
+            vel = 0.006 * (dist * dist) + 1.5
+            # vel = 11.1 * dist / 40
+
+            if vel <= 1.6:
                 vel = 0.0
+
+            print vel
 
             p.twist.twist.linear.x = min(vel, wp.twist.twist.linear.x)
             decelerated_waypoints.append(p)
+
         return decelerated_waypoints
 
     def pose_cb(self, pose):
@@ -109,7 +116,7 @@ class WaypointUpdater(object):
         waypoints[waypoint].twist.twist.linear.x = velocity
 
     def distance(self, waypoints, wp1, wp2):
-        dist = 0
+        dist = 0.0
         dl = lambda a, b: math.sqrt((a.x-b.x)**2 + (a.y-b.y)**2  + (a.z-b.z)**2)
         for i in range(wp1, wp2+1):
             dist += dl(waypoints[wp1].pose.pose.position, waypoints[i].pose.pose.position)
