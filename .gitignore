@@ -1,3 +1,4 @@
 /ros/devel
 /ros/build
+/ros/src/styx/profile.tmp
 *.pyc

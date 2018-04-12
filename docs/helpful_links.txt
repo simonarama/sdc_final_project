@@ -6,3 +6,11 @@ sudo apt-get update
 sudo apt-get install ros-$ROS_DISTRO-dbw-mkz
 
 ###########################################################################
+Install other necessary python packages:
+sudo pip install eventlet
+sudo pip install socketio
+sudo pip install flask
+sudo pip install attrdict
+sudo pip install flask-socketio==1.0b1
+sudo pip install scipy
+###########################################################################
