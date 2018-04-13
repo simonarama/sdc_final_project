@@ -20,11 +20,11 @@ class TLClassifier(object):
     TLClassifier, the class responsible for detecting traffic light with colors
     using pretrained convolutional nueral network.
     """
-    def __init__(self, checkpoint_path, labels_path):
+    def __init__(self, checkpoint_path, labels_path, num_classes):
         self.detection_graph = TLClassifier.load_graph_from_checkpoint(checkpoint_path)
         self.label_map = label_map_util.load_labelmap(labels_path)
 
-        self.categories = label_map_util.convert_label_map_to_categories(self.label_map, max_num_classes=4, use_display_name=True)
+        self.categories = label_map_util.convert_label_map_to_categories(self.label_map, max_num_classes=num_classes, use_display_name=True)
         self.category_index = label_map_util.create_category_index(self.categories)
 
         self.image_tensor, self.output_dict_tensor = self.load_input_output_tensors(self.detection_graph)
@@ -39,24 +39,20 @@ class TLClassifier(object):
         return TrafficLight.UNKNOWN
 
     def infer_image(self, image):
-        """
-        detect traffic light on the given image and return an image with detection be drawn.
-        the returned image is drawn on the input image, no copy is made
-        image, cv::Mat, image containing the traffic light
-        """
+        """ detect traffic light on the given image and return the detection result """
         output_dict = self.sess.run(self.output_dict_tensor, feed_dict={self.image_tensor: np.expand_dims(image, 0)})
-
         # all outputs are float32 numpy arrays, so convert types as appropriate
         output_dict['num_detections'] = int(output_dict['num_detections'][0])
         output_dict['detection_classes'] = output_dict['detection_classes'][0].astype(np.uint8)
         output_dict['detection_boxes'] = output_dict['detection_boxes'][0]
         output_dict['detection_scores'] = output_dict['detection_scores'][0]
+        return output_dict
 
-        # Visualization of the results of a detection.
+    def draw_detection_on_image(self, image, output_dict):
+        """ Visualization of the results of a detection."""
         vis_util.visualize_boxes_and_labels_on_image_array(
             image, output_dict['detection_boxes'], output_dict['detection_classes'], output_dict['detection_scores'],
             self.category_index, use_normalized_coordinates=True, line_thickness=8)
-
         return image
 
     def infer_images(self, images):
@@ -85,6 +81,7 @@ class TLClassifier(object):
         image = TLClassifier.load_image(image_path)
         result = self.infer_image(image)
         TLClassifier.display_image(result)
+
 
     @staticmethod
     def load_input_output_tensors(graph):
