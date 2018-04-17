@@ -5,15 +5,16 @@ from geometry_msgs.msg import PoseStamped, Pose
 from styx_msgs.msg import TrafficLightArray, TrafficLight
 from styx_msgs.msg import Lane
 from sensor_msgs.msg import Image
-from cv_bridge import CvBridge
-from light_classification.tl_classifier import TLClassifier
 
 from common.waypoints import WayPoints
 
 import tf
 import cv2
 import yaml
+
+from cv_bridge import CvBridge
 import settings
+from light_classification.tl_classifier import TLClassifier
 
 STATE_COUNT_THRESHOLD = 3
 
@@ -90,6 +91,10 @@ class TLDetector(object):
         self.camera_image = msg
 
         light_wp, state = self.process_traffic_lights()
+
+        # used only in simulator, ground truth data is got from simulator
+        # light_wp, state = self.process_traffic_lights_sim()
+
         self.update_state(light_wp, state)
 
     def process_traffic_lights(self):
@@ -99,52 +104,43 @@ class TLDetector(object):
             int: index of waypoint closes to the upcoming stop line for a traffic light (-1 if none exists)
             int: ID of traffic light color (specified in styx_msgs/TrafficLight)
         """
-        closest_light, line_wp_idx = self.find_closest_traffic_light()
-        if closest_light is None:
+        line_wp_idx = self.find_closest_traffic_light()
+        if line_wp_idx is None:
             return -1, TrafficLight.UNKNOWN
 
-        light_state = self.get_light_state(closest_light)
+        light_state = self.get_light_state()
         return line_wp_idx, light_state
 
     def find_closest_traffic_light(self):
-        """ find the closest traffic light and the stop line waypoint index to current pose """
-        # List of positions that correspond to the line to stop in front of for a given intersection
-        stop_line_positions = self.config['stop_line_positions']
-
-        closest_light = None
+        """
+        find the stop line waypoint index of the closest traffic light to current pose
+        """
         line_wp_idx = None
         if self.pose:
             car_wp_idx = self.waypoints.get_closest_waypoint_idx(self.pose.pose.position.x, self.pose.pose.position.y)
             # find the closest visible traffic light (if one exists)
             min_distance = self.waypoints.get_num_waypoints()
-            for i, light in enumerate(self.lights):
+            stop_line_positions = self.config['stop_line_positions']
+            for line in stop_line_positions:
                 # get stop line waypoint index
-                line = stop_line_positions[i]
                 temp_wp_idx = self.waypoints.get_closest_waypoint_idx(line[0], line[1])
                 # find closest stop line waypoint index
                 distance = temp_wp_idx - car_wp_idx
                 if distance >= 0 and distance < min_distance:
                     min_distance = distance
-                    closest_light = light
                     line_wp_idx = temp_wp_idx
+        return line_wp_idx
 
-        return closest_light, line_wp_idx
-
-    def get_light_state(self, light):
+    def get_light_state(self):
         """
-        Determines the current color of the traffic light
-        Param: light (TrafficLight), light to classify
+        determin the current color of the light from image
         Return: int, ID of traffic light color (specified in styx_msgs/TrafficLight)
         """
-        # for testing, just return the light state
-        #return light.state
-
         if not self.has_image:
             return TrafficLight.UNKNOWN
 
         cv_image = self.bridge.imgmsg_to_cv2(self.camera_image, desired_encoding="rgb8")
-        light_state = self.light_classifier.get_classification(cv_image)
-        return light_state
+        return self.light_classifier.get_classification(cv_image)
 
     def update_state(self, light_wp, state):
         '''
@@ -165,6 +161,53 @@ class TLDetector(object):
             self.upcoming_red_light_pub.publish(Int32(self.last_wp))
         self.state_count += 1
 
+    def process_traffic_lights_sim(self):
+        """
+        Finds closest visible traffic light, if one exists, and determines its location and color,
+        used only in simulator
+        Return:
+            int: index of waypoint closes to the upcoming stop line for a traffic light (-1 if none exists)
+            int: ID of traffic light color (specified in styx_msgs/TrafficLight)
+        """
+        closestlight, line_wp_idx = self.find_closest_traffic_light_sim()
+        if closestlight is None:
+            return -1, TrafficLight.UNKNOWN
+        light_state = self.get_light_state_sim(closestlight)
+        return line_wp_idx, light_state
+
+    def get_light_state_sim(self, light):
+        """
+        Determines the current color of the traffic light,
+        used only in simulator
+        Param: light (TrafficLight), light to classify
+        Return: int, ID of traffic light color (specified in styx_msgs/TrafficLight)
+        """
+        # for testing, just return the light state
+        return light.state
+
+    def find_closest_traffic_light_sim(self):
+        """
+        find the closest traffic light and the stop line waypoint index to current pose,
+        used only in simulator
+        """
+        stop_line_positions = self.config['stop_line_positions']
+        closest_light = None
+        line_wp_idx = None
+        if self.pose:
+            car_wp_idx = self.waypoints.get_closest_waypoint_idx(self.pose.pose.position.x, self.pose.pose.position.y)
+            # find the closest visible traffic light (if one exists)
+            min_distance = self.waypoints.get_num_waypoints()
+            for i, light in enumerate(self.lights):
+                # get stop line waypoint index
+                line = stop_line_positions[i]
+                temp_wp_idx = self.waypoints.get_closest_waypoint_idx(line[0], line[1])
+                # find closest stop line waypoint index
+                distance = temp_wp_idx - car_wp_idx
+                if distance >= 0 and distance < min_distance:
+                    min_distance = distance
+                    closest_light = light
+                    line_wp_idx = temp_wp_idx
+        return closest_light, line_wp_idx
 
 if __name__ == '__main__':
     try:
