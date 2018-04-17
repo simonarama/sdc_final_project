@@ -20,6 +20,8 @@ class TLClassifier(object):
     TLClassifier, the class responsible for detecting traffic light with colors
     using pretrained convolutional nueral network.
     """
+    DETECTION_SCORE_THRESHOLD = 0.5
+
     def __init__(self, checkpoint_path, labels_path, num_classes):
         self.detection_graph = TLClassifier.load_graph_from_checkpoint(checkpoint_path)
         self.label_map = label_map_util.load_labelmap(labels_path)
@@ -36,11 +38,45 @@ class TLClassifier(object):
         Param image (cv::Mat): image containing the traffic light
         Return int, ID of traffic light color (specified in styx_msgs/TrafficLight)
         """
-        return TrafficLight.UNKNOWN
+        output_dict = self.infer_image(image)
+
+        # check the number of red, green and yellow light detections
+        num_red_detections = 0
+        num_yellow_detections = 0
+        num_green_detections = 0
+        for detected_class, score in zip(output_dict['detection_classes'], output_dict['detection_scores']):
+            if score < TLClassifier.DETECTION_SCORE_THRESHOLD:
+                continue
+            if detected_class == 1:
+                num_green_detections = num_green_detections + 1
+            elif detected_class == 2:
+                num_red_detections = num_red_detections + 1
+            elif detected_class == 3:
+                num_yellow_detections = num_yellow_detections + 1
+
+        # determin the traffic light state based on detections
+        light_state = TrafficLight.UNKNOWN
+        if num_red_detections == 0 and num_green_detections == 0 and num_yellow_detections == 0:
+            light_state = TrafficLight.UNKNOWN
+        elif num_red_detections >= num_green_detections and num_red_detections >= num_yellow_detections:
+            light_state = TrafficLight.RED
+        elif num_yellow_detections >= num_red_detections and num_yellow_detections >= num_green_detections:
+            light_state = TrafficLight.YELLOW
+        elif num_green_detections >= num_red_detections and num_green_detections >= num_yellow_detections:
+            light_state = TrafficLight.GREEN
+
+        # print out the detection result
+        print "# red lights: {}, green lights: {}, yellow lights: {}".format(num_red_detections, num_green_detections, num_yellow_detections)
+        TLClassifier.print_light_state(light_state)
+
+        return light_state
 
     def infer_image(self, image):
-        """ detect traffic light on the given image and return the detection result """
+        """
+        detect traffic light on the given image and return the detection result
+        """
         output_dict = self.sess.run(self.output_dict_tensor, feed_dict={self.image_tensor: np.expand_dims(image, 0)})
+
         # all outputs are float32 numpy arrays, so convert types as appropriate
         output_dict['num_detections'] = int(output_dict['num_detections'][0])
         output_dict['detection_classes'] = output_dict['detection_classes'][0].astype(np.uint8)
@@ -49,14 +85,23 @@ class TLClassifier(object):
         return output_dict
 
     def draw_detection_on_image(self, image, output_dict):
-        """ Visualization of the results of a detection."""
+        """
+        visualization of the results of a detection.
+        """
         vis_util.visualize_boxes_and_labels_on_image_array(
-            image, output_dict['detection_boxes'], output_dict['detection_classes'], output_dict['detection_scores'],
-            self.category_index, use_normalized_coordinates=True, line_thickness=8)
+            image,
+            output_dict['detection_boxes'],
+            output_dict['detection_classes'],
+            output_dict['detection_scores'],
+            self.category_index,
+            use_normalized_coordinates=True,
+            line_thickness=8)
         return image
 
     def infer_images(self, images):
-        """ detect traffic light on the given list of images """
+        """
+        detect traffic light on the given list of images
+        """
         for image in images:
             result = self.infer_image(image)
             plt.figure()
@@ -81,7 +126,6 @@ class TLClassifier(object):
         image = TLClassifier.load_image(image_path)
         result = self.infer_image(image)
         TLClassifier.display_image(result)
-
 
     @staticmethod
     def load_input_output_tensors(graph):
@@ -120,7 +164,7 @@ class TLClassifier(object):
 
     @staticmethod
     def get_files_in_folder(folder_path):
-        """get all file pathes in the given folder"""
+        """ get all file pathes in the given folder """
         return [join(folder_path, f) for f in listdir(folder_path) if isfile(join(folder_path, f))]
 
     @staticmethod
@@ -129,3 +173,15 @@ class TLClassifier(object):
         plt.figure()
         plt.imshow(image)
         plt.show()
+
+    @staticmethod
+    def print_light_state(light_state):
+        """ print out the light state for debuging purpose """
+        if light_state == TrafficLight.RED:
+            print "light state: red"
+        elif light_state == TrafficLight.YELLOW:
+            print "light state: yellow"
+        elif light_state == TrafficLight.GREEN:
+            print "lgiht state: green"
+        else:
+            print "light state: unknown"
