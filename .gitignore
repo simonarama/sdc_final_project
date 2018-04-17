@@ -1,4 +1,9 @@
 /ros/devel
 /ros/build
 /ros/src/styx/profile.tmp
+/traffic_light_detection/data
+/traffic_light_detection/models/model/train
+/traffic_light_detection/models/model/eval
+/traffic_light_detection/models/model/result
+/traffic_light_detection/models/trained_result
 *.pyc
