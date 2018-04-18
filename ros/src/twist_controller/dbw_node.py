@@ -118,11 +118,11 @@ class DBWNode(object):
     def final_waypoints_cb(self, waypoints):
         self.final_waypoints = waypoints.waypoints
 
-    def get_xy(self,wp):
+    def get_xy(self,wps):
         coords = []
 
-        for n in range(len(wp)):
-            coords.append([wp[n].pose.pose.position.x, wp[n].pose.pose.position.y])
+        for n in range(len(wps)):
+            coords.append([wps[n].pose.pose.position.x, wps[n].pose.pose.position.y])
 
         return coords
 
@@ -134,7 +134,10 @@ class DBWNode(object):
         relative_wps = wps - np.array([origin.x, origin.y])
         relative_pose = np.array([pose.pose.position.x - origin.x, pose.pose.position.y - origin.y])
 
-        psi = np.arctan2(relative_wps[10,1], relative_wps[10,0])
+        try:
+            psi = np.arctan2(relative_wps[10,1], relative_wps[10,0])
+        except IndexError:
+            return 0.0 
 
         rotate = np.array([[np.cos(psi), -np.sin(psi)],
                           [np.sin(psi), np.cos(psi)]])

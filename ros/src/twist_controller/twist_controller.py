@@ -38,7 +38,7 @@ class Controller(object):
         # kp,ki,kd 
         t_vals = [0.3,0.1,0.0]
         # s_vals = [0.2,0.0001,0.5]
-        s_vals = [0.2,0.0001,0.6]
+        s_vals = [0.25,0.0001,0.6]
 
         min_throttle = 0.0
         max_throttle = 0.2
@@ -51,9 +51,8 @@ class Controller(object):
         ts = 0.02 # sample time
         self.vel_lpf = LowPassFilter(tau, ts)
 
-        tau = 0.8 # 1/(2pi*tau) = cutoff frequency
+        tau = 0.85 # 1/(2pi*tau) = cutoff frequency
         ts = 0.02 # sample time
-
         self.str_lpf = LowPassFilter(tau, ts)
 
         # setup last time value
