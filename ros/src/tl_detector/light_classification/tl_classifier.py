@@ -103,7 +103,8 @@ class TLClassifier(object):
         detect traffic light on the given list of images
         """
         for image in images:
-            result = self.infer_image(image)
+            detection = self.infer_image(image)
+            result = self.draw_detection_on_image(image, detection)
             plt.figure()
             plt.imshow(result)
             plt.show()

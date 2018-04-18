@@ -11,7 +11,7 @@ from cv_bridge import CvBridge
 from light_classification.tl_classifier import TLClassifier
 import settings
 
-class TLClassifierTestNode(object):
+class TLClassifierTestNodeSim(object):
     """
     ros node for traffic light classifier testing, it listens to the camera images and publishes the detection result image
     """
@@ -46,6 +46,6 @@ class TLClassifierTestNode(object):
 
 if __name__ == '__main__':
     try:
-        TLClassifierTestNode()
+        TLClassifierTestNodeSim()
     except rospy.ROSInterruptException:
         rospy.logerr('Could not start traffic node.')
