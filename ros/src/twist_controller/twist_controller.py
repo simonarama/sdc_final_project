@@ -38,10 +38,10 @@ class Controller(object):
         # kp,ki,kd 
         t_vals = [0.3,0.1,0.0]
         # s_vals = [0.2,0.0001,0.5]
-        s_vals = [0.25,0.0001,0.6]
+        s_vals = [0.15,0.001,0.1]
 
         min_throttle = 0.0
-        max_throttle = 0.2
+        max_throttle = 0.35
 
         self.throttle_controller = PID(kp=t_vals[0], ki=t_vals[1], kd=t_vals[2], mn=min_throttle, mx=max_throttle)
         self.steering_controller = PID(kp=s_vals[0], ki=s_vals[1], kd=s_vals[2], mn=-self.max_steer_angle, mx=self.max_steer_angle)
@@ -51,9 +51,9 @@ class Controller(object):
         ts = 0.02 # sample time
         self.vel_lpf = LowPassFilter(tau, ts)
 
-        tau = 0.85 # 1/(2pi*tau) = cutoff frequency
-        ts = 0.02 # sample time
-        self.str_lpf = LowPassFilter(tau, ts)
+        # tau = 0.85 # 1/(2pi*tau) = cutoff frequency
+        # ts = 0.02 # sample time
+        # self.str_lpf = LowPassFilter(tau, ts)
 
         # setup last time value
         self.last_time = rospy.get_time()
@@ -67,7 +67,7 @@ class Controller(object):
 
         # get the current
         current_vel = self.vel_lpf.filt(current_vel)
-        cte = self.str_lpf.filt(cte)
+        # cte = self.str_lpf.filt(cte)
 
         yc_steering = self.yaw_controller.get_steering(linear_vel, angular_vel, current_vel)
 
