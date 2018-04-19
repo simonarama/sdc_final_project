@@ -147,13 +147,15 @@ class Bridge(object):
         self.publishers['brake_report'].publish(self.create_float(brake))
 
     def publish_obstacles(self, data):
+        all_pose = []
         for obs in data['obstacles']:
             pose = self.create_pose(obs[0], obs[1], obs[2])
             self.publishers['obstacle'].publish(pose)
+            all_pose.append([obs[0], obs[1], obs[2]])
         header = Header()
         header.stamp = rospy.Time.now()
         header.frame_id = '/world'
-        cloud = pcl2.create_cloud_xyz32(header, data['obstacles'])
+        cloud = pcl2.create_cloud_xyz32(header, all_pose)
         self.publishers['obstacle_points'].publish(cloud)
 
     def publish_lidar(self, data):
