@@ -1,5 +1,12 @@
 <?xml version="1.0"?>
 <launch>
+    <!-- Parameters -->
+    <!--Traffic Light Locations and Camera Config -->
+    <param name="traffic_light_config" textfile="$(find tl_detector)/site_traffic_light_config.yaml" />
+    <!-- Traffic Light classification inference file path -->
+    <param name="traffic_light_inference_file" value="$(find tl_detector)/data/models/ssd_mobilenet_v2_tl_real_3_classes.pb" />
+
+    <!-- ROS Nodes -->
     <!--DBW Node -->
     <include file="$(find twist_controller)/launch/dbw.launch"/>
 
@@ -12,9 +19,6 @@
     <!--Waypoint Updater Node -->
     <include file="$(find waypoint_updater)/launch/waypoint_updater.launch"/>
 
-    <!--Traffic Light Locations and Camera Config -->
-    <param name="traffic_light_config" textfile="$(find tl_detector)/site_traffic_light_config.yaml" />
-
     <!--Traffic Light Detector Node -->
     <include file="$(find tl_detector)/launch/tl_detector_site.launch"/>
 
@@ -23,4 +27,5 @@
 
     <!--Camera Info Publisher -->
     <include file="$(find camera_info_publisher)/launch/camera_info_publisher.launch"/>
+
 </launch>

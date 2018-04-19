@@ -5,15 +5,12 @@ from geometry_msgs.msg import PoseStamped, Pose
 from styx_msgs.msg import TrafficLightArray, TrafficLight
 from styx_msgs.msg import Lane
 from sensor_msgs.msg import Image
-
 from common.waypoints import WayPoints
 
 import tf
-import cv2
 import yaml
 
 from cv_bridge import CvBridge
-import settings
 from light_classification.tl_classifier import TLClassifier
 
 STATE_COUNT_THRESHOLD = 3
@@ -32,9 +29,9 @@ class TLDetector(object):
         self.bridge = CvBridge()
         self.listener = tf.TransformListener()
 
-        inference_graph_path = '../../data/models/ssd_mobilenet_v2_tl_sim_3_classes.pb'
-        #inference_graph_path = '../../data/models/ssd_mobilenet_v2_tl_real_3_classes.pb'
-        self.light_classifier = TLClassifier(inference_graph_path)
+        inference_file = rospy.get_param('/traffic_light_inference_file')
+        self.light_classifier = TLClassifier(inference_file)
+        print '>>> tl detector: using inference file with path {}'.format(inference_file)
 
         self.lights = []
         # init ros node
@@ -46,6 +43,7 @@ class TLDetector(object):
         # load traffic light configuration file
         config_string = rospy.get_param("/traffic_light_config")
         self.config = yaml.load(config_string)
+        print '>>> tl detector: using traffic light config: {}'.format(config_string)
 
         # create red light pubilisher
         self.upcoming_red_light_pub = rospy.Publisher('/traffic_waypoint', Int32, queue_size=1)
