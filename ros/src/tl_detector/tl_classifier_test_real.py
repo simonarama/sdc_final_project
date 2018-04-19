@@ -9,6 +9,7 @@ from sensor_msgs.msg import Image as ImageMessage
 from cv_bridge import CvBridge
 
 from light_classification.tl_classifier import TLClassifier
+import settings
 
 class TLClassifierTestNodeReal(object):
     """
@@ -18,10 +19,8 @@ class TLClassifierTestNodeReal(object):
         rospy.init_node('tl_classifier_test')
         self.bridge = CvBridge()
         # create the traffic light classifier
-        inference_file = '../../data/models/ssd_mobilenet_v2_traffic_light_inference_graph.pb'
-        labels_file ='../../data/small_traffic_label_map_4.pbtxt'
-        num_classes = 4
-        self.classifier = TLClassifier(inference_file, labels_file, num_classes)
+        inference_file = '../../data/models/ssd_mobilenet_v2_tl_real_3_classes.pb'
+        self.classifier = TLClassifier(inference_file, settings.traffic_light_labels_file, settings.traffic_light_num_classes)
         # create the publisher to publish result out
         self.classification_publisher = rospy.Publisher('/traffic_light_classification', ImageMessage, queue_size=1)
         # listen to raw image published by testing ros bag file from course
