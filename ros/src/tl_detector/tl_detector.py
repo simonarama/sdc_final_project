@@ -32,10 +32,9 @@ class TLDetector(object):
         self.bridge = CvBridge()
         self.listener = tf.TransformListener()
 
-        self.light_classifier = TLClassifier(
-            settings.traffic_light_inference_file,
-            settings.traffic_light_labels_file,
-            settings.traffic_light_num_classes)
+        inference_graph_path = '../../data/models/ssd_mobilenet_v2_tl_sim_3_classes.pb'
+        #inference_graph_path = '../../data/models/ssd_mobilenet_v2_tl_real_3_classes.pb'
+        self.light_classifier = TLClassifier(inference_graph_path)
 
         self.lights = []
         # init ros node
