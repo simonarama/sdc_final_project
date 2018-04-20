@@ -1,3 +1,6 @@
+# to be compatible to the tensorflow 1.3.0, run this script in tensorflow 1.3.0 to export
+# inference graph that can be used with tensorflow 1.3.0
+
 python export_inference_graph.py \
     --input_type image_tensor \
     --trained_checkpoint_prefix ./train/model.ckpt-20522 \

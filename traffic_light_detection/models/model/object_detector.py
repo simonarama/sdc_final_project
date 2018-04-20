@@ -102,7 +102,7 @@ def detect_general_classes():
 
 def detect_traffic_lights():
     """detect the traffic lights usinge tranfer learned model"""
-    checkpoint_path = './result/frozen_inference_graph.pb'
+    checkpoint_path = './inference_graph/tf_1.3.0/ssd_mobilenet_v2_tl_real_3_classes.pb'
     labels_path = './labelmaps/annotated_label_map_3.pbtxt'
     num_classes = 3
 
