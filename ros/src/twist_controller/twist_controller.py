@@ -7,7 +7,6 @@ from yaw_controller import YawController
 GAS_DENSITY = 2.858
 ONE_MPH = 0.44704
 
-
 class Controller(object):
     def __init__(self, vehicle_mass, fuel_capacity, brake_deadband,
         decel_limit, accel_limit, wheel_radius, wheel_base, steer_ratio,
@@ -33,41 +32,36 @@ class Controller(object):
             max_lat_accel=max_lat_accel,
             max_steer_angle=max_steer_angle)
 
-        # init throttle controller
-
         # kp,ki,kd 
         t_vals = [0.3,0.1,0.0]
-        # s_vals = [0.2,0.0001,0.5]
         s_vals = [0.15,0.001,0.1]
 
         min_throttle = 0.0
         max_throttle = 0.35
 
+        # Initialize actuation controllers
         self.throttle_controller = PID(kp=t_vals[0], ki=t_vals[1], kd=t_vals[2], mn=min_throttle, mx=max_throttle)
         self.steering_controller = PID(kp=s_vals[0], ki=s_vals[1], kd=s_vals[2], mn=-self.max_steer_angle, mx=self.max_steer_angle)
 
-        # init velocity low pass filter, use low pass filter to filter out high frequency noise in velocity
+        # Initialize velocity low pass filter, use low pass filter to filter out high frequency noise in velocity
         tau = 0.5 # 1/(2pi*tau) = cutoff frequency
         ts = 0.02 # sample time
         self.vel_lpf = LowPassFilter(tau, ts)
 
-        # tau = 0.85 # 1/(2pi*tau) = cutoff frequency
-        # ts = 0.02 # sample time
-        # self.str_lpf = LowPassFilter(tau, ts)
-
-        # setup last time value
+        # Initialize last time.
         self.last_time = rospy.get_time()
+        
 
     def control(self, dbw_enabled, current_vel, linear_vel, angular_vel, cte):
-        # first check if the dbw is enabled or not
+        # First check if the DBW is enabled or not
         if not dbw_enabled:
             self.throttle_controller.reset()
             self.steering_controller.reset()
+            # print ("DBW disabled")
             return 0.0, 0.0, 0.0
 
-        # get the current
+        # Filter current velocity.
         current_vel = self.vel_lpf.filt(current_vel)
-        # cte = self.str_lpf.filt(cte)
 
         yc_steering = self.yaw_controller.get_steering(linear_vel, angular_vel, current_vel)
 
@@ -83,10 +77,7 @@ class Controller(object):
         throttle = self.throttle_controller.step(vel_error, sample_time)
         pid_steering = self.steering_controller.step(cte, sample_time)
 
-        # steering = pid_steering
-        # steering = yc_steering
         steering = yc_steering + pid_steering
-        # steering = (yc_steering + pid_steering) / 2
 
         brake = 0
 
