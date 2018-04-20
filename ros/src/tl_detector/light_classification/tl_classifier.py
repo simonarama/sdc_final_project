@@ -60,11 +60,11 @@ class TLClassifier(object):
             light_state = TrafficLight.GREEN
 
         # print out the detection result
-        print "tl classifier: {}, with {} red lights, {} green lights and {} yellow lights".format(
-            TLClassifier.get_light_state_name(light_state),
+        print "tl classifier: [red: {}, green: {}, yellow: {}] {}".format(
             num_red_detections,
             num_green_detections,
-            num_yellow_detections)
+            num_yellow_detections,
+            TLClassifier.get_light_state_name(light_state))
 
         return light_state
 
