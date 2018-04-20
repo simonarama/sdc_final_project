@@ -1,5 +1,0 @@
-<?xml version="1.0"?>
-<launch>
-    <!-- Simulator Bridge -->
-    <include file="$(find styx)/launch/server.launch"/>
-</launch>
