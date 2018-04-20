@@ -103,12 +103,12 @@ def detect_general_classes():
 def detect_traffic_lights():
     """detect the traffic lights usinge tranfer learned model"""
     checkpoint_path = './result/frozen_inference_graph.pb'
-    labels_path = './labelmaps/small_traffic_label_map_4.pbtxt'
-    num_classes = 4
+    labels_path = './labelmaps/annotated_label_map_3.pbtxt'
+    num_classes = 3
 
     detector = ObjectDetector(checkpoint_path, labels_path, num_classes)
-    #detector.detect_images('test_images/', 10)
-    detector.detect_images('../../data/datasets/dataset_test_rgb/rgb/test/', 10)
+    detector.detect_images('test_images/', 10)
+    #detector.detect_images('../../data/datasets/dataset_test_rgb/rgb/test/', 10)
 
 
 if __name__ == '__main__':

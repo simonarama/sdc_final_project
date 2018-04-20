@@ -4,7 +4,7 @@
     <!--Traffic Light Locations and Camera Config -->
     <param name="traffic_light_config" textfile="$(find tl_detector)/sim_traffic_light_config.yaml" />
     <!-- Traffic Light classification inference file path -->
-    <param name="traffic_light_inference_file" value="$(find tl_detector)/data/models/ssd_mobilenet_v2_tl_sim_3_classes.pb" />
+    <param name="traffic_light_inference_file" value="$(find tl_detector)/data/models/tf_1.3.0/ssd_mobilenet_v2_tl_sim_3_classes.pb" />
 
     <!-- ROS Nodes -->
     <!-- Simulator Bridge -->
