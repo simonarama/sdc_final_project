@@ -40,4 +40,4 @@ In this project, we use the [Bosch Small Traffic Light Dataset](https://hci.iwr.
 ## Training result of general traffic light detection and classification
 
 
-# Vechilce Controller
+# Vehicle Controller
