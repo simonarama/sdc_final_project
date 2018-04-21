@@ -54,18 +54,34 @@ In this project, we use the [Bosch Small Traffic Light Dataset](https://hci.iwr.
 
 ## Training result of general traffic light detection and classification
 
-By using Tensorflow Object Detection pipeline and [config file](../traffic_light_detection/models/model/ssd_mobilenet_v2_coco_4_classes.config), we have got the following training result losses:
+By applying transfer learning on the general ssd_mobilenet_v2_coco model and train it with the Bosch small traffic light dataset, we got the following training result.
 
 ![General traffic light detection training result](traffic_light_training_general.png)
 
-After the model is trained, it works quite well on general traffic light detection and classification, you can see the results from the following images
+The config file for using the Tensorflow Object Detection pipeline can be found [here](../traffic_light_detection/models/model/ssd_mobilenet_v2_coco_4_classes.config). After the model is trained, it works quite well on general traffic light detection and classification, you can see the results from the following images:
+
+## Collection of annotated data
+
+After getting the general traffic light detection and classification, we try to use it directly in our project for both simulator and the ros bag file. However, the results are not so good. In simulator, it can detect the traffic light states, however, the result is not so stable and sometimes it fails. For the ros bag file, due to the special lighting condition and the reflection of the wind schield, it fails to detect the traffic lights most of the time.
+
+To make the model perform better, we need to feed it with special data for the simulator and the ros bag file. Since the simulator and the ros bag file are so different, we decide to train two different models, one for each.
+
+The straight forward way to collect training data from the simulator and the training ros bag file is to annotate images ourselves. Thanks to [coldKnight](https://drive.google.com/file/d/0B-Eiyn-CUQtxdUZWMkFfQzdObUE/view?usp=sharing), he shared this annotated simulator and ros bag file dataset. So we could save a lot of time annotating the images. After some double checking and minor fixing of the dataset, we could use them for training our specific traffic light detection and classification models.
 
 ## Training result of simulator traffic light detection and classification
 
+By applying transfer learning on the general traffic light detection and classification model and training it with the annotated simulator traffic light examples, we get the following training result:
+
 ![Simulator traffic light detection training result](traffic_light_training_sim.png)
 
-## Training result of ros real testing environment traffic light detection and classification
+The config file for using the Tensorflow Object Detection pipeline can be found [here](../traffic_light_detection/models/model/ssd_mobilenet_v2_coco_3_classes_annotated_sim.config). And the following are some examples of applying this model on some simulator images:
+
+## Training result of ros bag file traffic light detection and classification
+
+By applying transfer learning on the general traffic light detection and classification model and training it with the annotated ros bag file traffic light examples, we get the following training result:
 
 ![Real traffic light detection training result](traffic_light_training_real.png)
+
+The config file for using the Tensorflow Object Detection pipeline can be found [here](../traffic_light_detection/models/model/ssd_mobilenet_v2_coco_3_classes_annotated_real.config). And the following are some examples of applying this model on some images from the testing ros bag file:
 
 # Vehicle Controller
