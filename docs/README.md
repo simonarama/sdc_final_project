@@ -10,6 +10,16 @@ Project: Programming a Real Self-Driving Car
     * Guillermo Gómez (ggomezbella@gmail.com)
     * Liheng Chen (liheng@freenet.de)
 
+# Project Result Videos
+
+The result of this project can be found from the following videos:
+
+* Running everything on simulator: [https://youtu.be/YFt2R3aFveA](https://youtu.be/YFt2R3aFveA)
+
+* Trafflic light detection and classification on simulator: [https://youtu.be/4QHtUHBuSWI](https://youtu.be/4QHtUHBuSWI)
+
+* Traffic light detection and classification on ros bag file of testing lot: [https://youtu.be/2jP-MySAgEo](https://youtu.be/2jP-MySAgEo)
+
 # Project Architecture
 
 As introduced in the project walkthrough, The vehilce subsystem contains mainly three different parts, perception, planning and control. And each part contains several different ros nodes for different functions. Different ros nodes communicate with each other by subscribing or publishing to interesting ros topics. The project software architecture can be shown as following:
@@ -82,7 +92,7 @@ By applying transfer learning on the general traffic light detection and classif
 
 ![Simulator traffic light detection training result](traffic_light_training_sim.png)
 
-The config file for using the Tensorflow Object Detection pipeline can be found [here](../traffic_light_detection/models/model/ssd_mobilenet_v2_coco_3_classes_annotated_sim.config). And the following are some examples of applying this model on some simulator images:
+The config file for using the Tensorflow Object Detection pipeline can be found [here](../traffic_light_detection/models/model/ssd_mobilenet_v2_coco_3_classes_annotated_sim.config). The result of running this mode on the simulator images can be found from [https://youtu.be/4QHtUHBuSWI](https://youtu.be/4QHtUHBuSWI). And the following are some examples of applying this model on some simulator images:
 
 ![sim_sample_1](sim_sample_1.jpg)
 ![sim_sample_1_result](sim_sample_1_result.png)
@@ -97,7 +107,7 @@ By applying transfer learning on the general traffic light detection and classif
 
 ![Real traffic light detection training result](traffic_light_training_real.png)
 
-The config file for using the Tensorflow Object Detection pipeline can be found [here](../traffic_light_detection/models/model/ssd_mobilenet_v2_coco_3_classes_annotated_real.config). And the following are some examples of applying this model on some images from the testing ros bag file:
+The config file for using the Tensorflow Object Detection pipeline can be found [here](../traffic_light_detection/models/model/ssd_mobilenet_v2_coco_3_classes_annotated_real.config). The result of running this model on the provided ros bag file can be found [https://youtu.be/2jP-MySAgEo](https://youtu.be/2jP-MySAgEo). And the following are some examples of applying this model on some images from the testing ros bag file:
 
 ![real_sample_1](real_sample_1.jpg)
 ![real_sample_1_result](real_sample_1_result.png)
