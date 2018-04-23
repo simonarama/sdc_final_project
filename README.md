@@ -23,7 +23,7 @@ The result of this project can be found from the following videos:
 # Project Architecture
 
 As introduced in the project walkthrough, The vehilce subsystem contains mainly three different parts, perception, planning and control. And each part contains several different ros nodes for different functions. Different ros nodes communicate with each other by subscribing or publishing to interesting ros topics. The project software architecture can be shown as following:
-![alt text](final-project-ros-graph-v2.png)
+![alt text](imgs/final-project-ros-graph-v2.png)
 
 # Traffic Light Detection
 An import part of perception in this project is to detect traffic light state from image. Though in simulator the ground truth traffic light state is provided, in real car, we need to get the traffic light state based on image only. And before that, we need to detect the traffic light state from image in simulator too.
@@ -66,16 +66,16 @@ In this project, we use the [Bosch Small Traffic Light Dataset](https://hci.iwr.
 
 By applying transfer learning on the general ssd_mobilenet_v2_coco model and train it with the Bosch small traffic light dataset, we got the following training result.
 
-![General traffic light detection training result](traffic_light_training_general.png)
+![General traffic light detection training result](imgs/traffic_light_training_general.png)
 
-The config file for using the Tensorflow Object Detection pipeline can be found [here](../traffic_light_detection/models/model/ssd_mobilenet_v2_coco_4_classes.config). After the model is trained, it works quite well on general traffic light detection and classification, you can see the results from the following images:
+The config file for using the Tensorflow Object Detection pipeline can be found [here](./traffic_light_detection/models/model/ssd_mobilenet_v2_coco_4_classes.config). After the model is trained, it works quite well on general traffic light detection and classification, you can see the results from the following images:
 
-![general_sample_1](general_sample_1.png)
-![general_sample_1_result](general_sample_1_result.png)
-![general_sample_2](general_sample_2.png)
-![general_sample_2_result](general_sample_2_result.png)
-![general_sample_3](general_sample_3.png)
-![general_sample_3_result](general_sample_3_result.png)
+![general_sample_1](imgs/general_sample_1.png)
+![general_sample_1_result](imgs/general_sample_1_result.png)
+![general_sample_2](imgs/general_sample_2.png)
+![general_sample_2_result](imgs/general_sample_2_result.png)
+![general_sample_3](imgs/general_sample_3.png)
+![general_sample_3_result](imgs/general_sample_3_result.png)
 
 
 ## Collection of annotated data
@@ -90,31 +90,31 @@ The straight forward way to collect training data from the simulator and the tra
 
 By applying transfer learning on the general traffic light detection and classification model and training it with the annotated simulator traffic light examples, we get the following training result:
 
-![Simulator traffic light detection training result](traffic_light_training_sim.png)
+![Simulator traffic light detection training result](imgs/traffic_light_training_sim.png)
 
-The config file for using the Tensorflow Object Detection pipeline can be found [here](../traffic_light_detection/models/model/ssd_mobilenet_v2_coco_3_classes_annotated_sim.config). The result of running this mode on the simulator images can be found from [https://youtu.be/4QHtUHBuSWI](https://youtu.be/4QHtUHBuSWI). And the following are some examples of applying this model on some simulator images:
+The config file for using the Tensorflow Object Detection pipeline can be found [here](./traffic_light_detection/models/model/ssd_mobilenet_v2_coco_3_classes_annotated_sim.config). The result of running this mode on the simulator images can be found from [https://youtu.be/4QHtUHBuSWI](https://youtu.be/4QHtUHBuSWI). And the following are some examples of applying this model on some simulator images:
 
-![sim_sample_1](sim_sample_1.jpg)
-![sim_sample_1_result](sim_sample_1_result.png)
-![sim_sample_2](sim_sample_2.jpg)
-![sim_sample_2_result](sim_sample_2_result.png)
-![sim_sample_3](sim_sample_3.jpg)
-![sim_sample_3_result](sim_sample_3_result.png)
+![sim_sample_1](imgs/sim_sample_1.jpg)
+![sim_sample_1_result](imgs/sim_sample_1_result.png)
+![sim_sample_2](imgs/sim_sample_2.jpg)
+![sim_sample_2_result](imgs/sim_sample_2_result.png)
+![sim_sample_3](imgs/sim_sample_3.jpg)
+![sim_sample_3_result](imgs/sim_sample_3_result.png)
 
 ## Training result of ros bag file traffic light detection and classification
 
 By applying transfer learning on the general traffic light detection and classification model and training it with the annotated ros bag file traffic light examples, we get the following training result:
 
-![Real traffic light detection training result](traffic_light_training_real.png)
+![Real traffic light detection training result](imgs/traffic_light_training_real.png)
 
-The config file for using the Tensorflow Object Detection pipeline can be found [here](../traffic_light_detection/models/model/ssd_mobilenet_v2_coco_3_classes_annotated_real.config). The result of running this model on the provided ros bag file can be found [https://youtu.be/2jP-MySAgEo](https://youtu.be/2jP-MySAgEo). And the following are some examples of applying this model on some images from the testing ros bag file:
+The config file for using the Tensorflow Object Detection pipeline can be found [here](./traffic_light_detection/models/model/ssd_mobilenet_v2_coco_3_classes_annotated_real.config). The result of running this model on the provided ros bag file can be found [https://youtu.be/2jP-MySAgEo](https://youtu.be/2jP-MySAgEo). And the following are some examples of applying this model on some images from the testing ros bag file:
 
-![real_sample_1](real_sample_1.jpg)
-![real_sample_1_result](real_sample_1_result.png)
-![real_sample_2](real_sample_2.jpg)
-![real_sample_2_result](real_sample_2_result.png)
-![real_sample_3](real_sample_3.jpg)
-![real_sample_3_result](real_sample_3_result.png)
+![real_sample_1](imgs/real_sample_1.jpg)
+![real_sample_1_result](imgs/real_sample_1_result.png)
+![real_sample_2](imgs/real_sample_2.jpg)
+![real_sample_2_result](imgs/real_sample_2_result.png)
+![real_sample_3](imgs/real_sample_3.jpg)
+![real_sample_3_result](imgs/real_sample_3_result.png)
 
 
 # Vehicle Controller
