@@ -60,6 +60,14 @@ By applying transfer learning on the general ssd_mobilenet_v2_coco model and tra
 
 The config file for using the Tensorflow Object Detection pipeline can be found [here](../traffic_light_detection/models/model/ssd_mobilenet_v2_coco_4_classes.config). After the model is trained, it works quite well on general traffic light detection and classification, you can see the results from the following images:
 
+![general_sample_1](general_sample_1.png)
+![general_sample_1_result](general_sample_1_result.png)
+![general_sample_2](general_sample_2.png)
+![general_sample_2_result](general_sample_2_result.png)
+![general_sample_3](general_sample_3.png)
+![general_sample_3_result](general_sample_3_result.png)
+
+
 ## Collection of annotated data
 
 After getting the general traffic light detection and classification, we try to use it directly in our project for both simulator and the ros bag file. However, the results are not so good. In simulator, it can detect the traffic light states, however, the result is not so stable and sometimes it fails. For the ros bag file, due to the special lighting condition and the reflection of the wind schield, it fails to detect the traffic lights most of the time.
@@ -76,6 +84,13 @@ By applying transfer learning on the general traffic light detection and classif
 
 The config file for using the Tensorflow Object Detection pipeline can be found [here](../traffic_light_detection/models/model/ssd_mobilenet_v2_coco_3_classes_annotated_sim.config). And the following are some examples of applying this model on some simulator images:
 
+![sim_sample_1](sim_sample_1.jpg)
+![sim_sample_1_result](sim_sample_1_result.png)
+![sim_sample_2](sim_sample_2.jpg)
+![sim_sample_2_result](sim_sample_2_result.png)
+![sim_sample_3](sim_sample_3.jpg)
+![sim_sample_3_result](sim_sample_3_result.png)
+
 ## Training result of ros bag file traffic light detection and classification
 
 By applying transfer learning on the general traffic light detection and classification model and training it with the annotated ros bag file traffic light examples, we get the following training result:
@@ -83,5 +98,13 @@ By applying transfer learning on the general traffic light detection and classif
 ![Real traffic light detection training result](traffic_light_training_real.png)
 
 The config file for using the Tensorflow Object Detection pipeline can be found [here](../traffic_light_detection/models/model/ssd_mobilenet_v2_coco_3_classes_annotated_real.config). And the following are some examples of applying this model on some images from the testing ros bag file:
+
+![real_sample_1](real_sample_1.jpg)
+![real_sample_1_result](real_sample_1_result.png)
+![real_sample_2](real_sample_2.jpg)
+![real_sample_2_result](real_sample_2_result.png)
+![real_sample_3](real_sample_3.jpg)
+![real_sample_3_result](real_sample_3_result.png)
+
 
 # Vehicle Controller

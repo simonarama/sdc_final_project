@@ -67,7 +67,7 @@ class ObjectDetector(object):
         """infer the images"""
         for image in images:
             # Run inference
-            print("Infer on image with size: {} x {}".format(image.shape[0], image.shape[1]))
+            print "Infer on image with size: {} x {}".format(image.shape[0], image.shape[1])
             output_dict = self.sess.run(self.output_dict_tensor, feed_dict={self.image_tensor: np.expand_dims(image, 0)})
 
             # all outputs are float32 numpy arrays, so convert types as appropriate
@@ -77,9 +77,14 @@ class ObjectDetector(object):
             output_dict['detection_scores'] = output_dict['detection_scores'][0]
 
             # Visualization of the results of a detection.
-            vis_util.visualize_boxes_and_labels_on_image_array(image, output_dict['detection_boxes'],
-                output_dict['detection_classes'], output_dict['detection_scores'], self.category_index,
-                use_normalized_coordinates=True, line_thickness=8)
+            vis_util.visualize_boxes_and_labels_on_image_array(
+                image,
+                output_dict['detection_boxes'],
+                output_dict['detection_classes'],
+                output_dict['detection_scores'],
+                self.category_index,
+                use_normalized_coordinates=True,
+                line_thickness=8)
 
             # display the image
             plt.figure()
@@ -87,30 +92,40 @@ class ObjectDetector(object):
             plt.show()
 
 
-def detect_general_classes():
-    """detect general classes using existing models directly"""
-    #checkpoint_path = '../../data/model_zoo/ssd_mobilenet_v1_coco_2017_11_17/frozen_inference_graph.pb'
-    #checkpoint_path = '../../data/model_zoo/ssd_mobilenet_v2_coco_2018_03_29/frozen_inference_graph.pb'
-    #checkpoint_path = '../../data/model_zoo/faster_rcnn_resnet50_coco_2018_01_28/frozen_inference_graph.pb'
-    checkpoint_path = '../../data/model_zoo/faster_rcnn_inception_v2_coco_2018_01_28/frozen_inference_graph.pb'
-    labels_path = './labelmaps/mscoco_label_map.pbtxt'
-    num_classes = 90
-
+def detect_general_traffic_light(image_path):
+    """
+    run traffic light detection using general traffic light detection model trained on the given image
+    """
+    checkpoint_path = './inference_graph/tf_1.7.0/ssd_mobilenet_v2_traffic_light_inference_graph.pb'
+    labels_path = './labelmaps/small_traffic_label_map_4.pbtxt'
+    num_classes = 4
     detector = ObjectDetector(checkpoint_path, labels_path, num_classes)
-    detector.detect_images('test_images/', 10)
+    detector.detect(image_path)
 
 
-def detect_traffic_lights():
-    """detect the traffic lights usinge tranfer learned model"""
-    checkpoint_path = './inference_graph/tf_1.3.0/ssd_mobilenet_v2_tl_real_3_classes.pb'
+def detect_sim_traffic_light(image_path):
+    """
+    run traffic light detection using simulator traffic light detection model trained on the given image
+    """
+    checkpoint_path = './inference_graph/tf_1.7.0/ssd_mobilenet_v2_tl_sim_3_classes.pb'
     labels_path = './labelmaps/annotated_label_map_3.pbtxt'
     num_classes = 3
-
     detector = ObjectDetector(checkpoint_path, labels_path, num_classes)
-    detector.detect_images('test_images/', 10)
-    #detector.detect_images('../../data/datasets/dataset_test_rgb/rgb/test/', 10)
+    detector.detect(image_path)
+
+
+def detect_real_traffic_light(image_path):
+    """
+    run traffic light detection using traffic light detection model trained testing real image on the given image
+    """
+    checkpoint_path = './inference_graph/tf_1.7.0/ssd_mobilenet_v2_tl_real_3_classes.pb'
+    labels_path = './labelmaps/annotated_label_map_3.pbtxt'
+    num_classes = 3
+    detector = ObjectDetector(checkpoint_path, labels_path, num_classes)
+    detector.detect(image_path)
 
 
 if __name__ == '__main__':
-    #detect_general_classes()
-    detect_traffic_lights()
+    #detect_general_traffic_light('test_images/25038.png')
+    #detect_sim_traffic_light('test_images/image8.jpg')
+    detect_real_traffic_light('test_images/left0146.jpg')
