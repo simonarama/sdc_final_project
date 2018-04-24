@@ -7,7 +7,7 @@ Project: Programming a Real Self-Driving Car
 * Members
     * David G (djg9610@gmail.com)
     * David Simon (simonarama@yahoo.com)
-    * Guillermo GÃ³mez (ggomezbella@gmail.com)
+    * Guillermo Gómez (ggomezbella@gmail.com)
     * Liheng Chen (liheng@freenet.de)
 
 # Project Result Videos
@@ -118,3 +118,42 @@ The config file for using the Tensorflow Object Detection pipeline can be found 
 
 
 # Vehicle Controller
+
+The vehicle controller handles driving behavior for the car. This is done by calculating appropriate values for actuation commands. "Appropriate" values can only be determined once we have a baseline of how the car should behave.
+
+The waypoint loader node for the system (as can be seen in the system architecture above) loads the base waypoint for our "map", or driving area. These base waypoints are then fed into the waypoint updater node 
+along with traffic waypoints and the current position of the car in the map. This is an important node for vehicle control, as it is used to determine the desired location and velocity of the car. Once the waypoint updater node 
+makes these determinations, car actuations can be determined. 
+
+The actuation values for the vehicle are primarily handled or assisted by PID controllers. A PID controller is an algorithm that calculates a value that serves to reduce error in a system. 
+The error in a system is the difference between the desired outcome, and the current state. In the case of this system, it is the difference between the waypoint position, and the car's current positioning. 
+
+A more detailed explanation of PID controllers in general can be found [here](https://en.wikipedia.org/wiki/PID_controller)
+
+PID, and generally how it's used in the system, is defined as:
+
+* P: Proportional - Actuate proportional to the error of the system multiplied by a factor of Tau. 
+
+* I: Integral - Actuate proportional to the sum of all errors. Used to correct for system bias that would normally prevent the car from reaching the desired state.
+
+* D: Derivative - Gradually introduces counter-actuation to avoid overshooting the target state.
+
+The PID calculation can be seen in pid.py
+
+## Throttle and Steering
+
+Throttle and steering behavior are determined as such:
+
+* Throttle: The difference between our desired waypoint velocity (set in waypoint_updater.py) and the current car velocity is measured and fed into a PID controller to apply appropriate throttle values. 
+  The car's velocity is first filtered by a lowpass filter to prevent noisy measurements from causing high-variance actuation.
+
+* Steering: Steering is a special case, as it's comprised of a yaw controller (yaw_controller.py) for general control, and assisted by a PID controller for smaller actuation adjustments. By using the combination 
+  of a PID controller and a yaw controller, we can achieve much smoother steering than either method by itself. 
+  
+## Braking
+
+Waypoint velocities are first set in the waypoint_updater node, as mentioned above. If a red traffic light is present within the calculated future waypoints, the system needs to set decelerated velocities for the waypoints 
+leading up to that traffic light. The declerated velocities are set as a function of distance. This can be seen in the decelerate_waypoints function of waypoint_updater.py. 
+
+Once the waypoint velocities are set, braking behavior can then be determined by if the velocity error (same as the throttle calculation) is a negative value. This value being negative means that the car is moving
+at a higher velocity than the waypoint's desired velocity, so the controller will apply braking force.
