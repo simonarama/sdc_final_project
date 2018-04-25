@@ -7,7 +7,7 @@ Project: Programming a Real Self-Driving Car
 * Members
     * David G (djg9610@gmail.com)
     * David Simon (simonarama@yahoo.com)
-    * Guillermo GÃ³mez (ggomezbella@gmail.com)
+    * Guillermo Gómez (ggomezbella@gmail.com)
     * Liheng Chen (liheng@freenet.de)
 
 # Project Result Videos
@@ -138,6 +138,8 @@ PID, and generally how it's used in the system, is defined as:
 
 * D: Derivative - Gradually introduces counter-actuation to avoid overshooting the target state.
 
+kp = 0.3, ki = 0.1 and kd = 0.0 (no derivative term) as set by experiment testing and comes with the repo for twist_controller.py
+
 The PID calculation can be seen in pid.py
 
 ## Throttle and Steering
@@ -149,11 +151,47 @@ Throttle and steering behavior are determined as such:
 
 * Steering: Steering is a special case, as it's comprised of a yaw controller (yaw_controller.py) for general control, and assisted by a PID controller for smaller actuation adjustments. By using the combination 
   of a PID controller and a yaw controller, we can achieve much smoother steering than either method by itself. 
+  kp = 0.15, ki = 0.001, kd = 0.1 was used in twist_controller.py
   
-## Braking
+## Drive by Wire (DBW Node)
+
+The drive by wire system was disengaged to see how the car would operate.  This is critical as a real vehicle like Carla may require a driver to take over as needed.
+The PID controllers can accumulate error which can result in a sudden jerking of the vehicle and loss of control as drive-by-wire mode is reengaged.
+As a result, in twist_controller.py under the control function, the throttle and steering controllers are reset with kp, ki, and kd set to 0.
+When this was tested in the simulator, the PID controllers stop and restart based on the status of dbw_enabled as expected. No accumulated error when DBW is turned off.
+The steering adapts back to the waypoints quickly if DBW is stopped and restarted. 
+
+## Velocity
+
+Default velocity of 40 kilometers per hour is set in the waypoint_loader.launch under <param name="velocity" value="40" />
+Velocity was tested at 40, 50, and 60 km/h. The car never went more than 0.05 mph above the speed limit. Some steering issues were seen at the higher speeds which led to implementation of the PID steering component.
+  
+## Deceleration
 
 Waypoint velocities are first set in the waypoint_updater node, as mentioned above. If a red traffic light is present within the calculated future waypoints, the system needs to set decelerated velocities for the waypoints 
-leading up to that traffic light. The declerated velocities are set as a function of distance. This can be seen in the decelerate_waypoints function of waypoint_updater.py. 
+leading up to that traffic light. The decelerated velocities are set as a function of distance. This can be seen in the decelerate_waypoints function of waypoint_updater.py.
+The calculation given in the repo is vel = math.sqrt (2 * MAX_DECEL * dist). 
+This is derived from the classic kinematics equation v squared = v initial squared + (2 * constant acceleration * distance).
+Here, due to stopping, v squared is 0 and maximum deceleration as in previous projects was set at 5 m/s per second. 
+The distance from the stopline decreases, so velocity vel goes down as the car gets closer to the stopline of the traffic light.
+The walkthrough indicated the square root can make this stopping less smooth than desired.  That was confirmed in testing. Using https://www.desmos.com/calculator to experiment with different functions,
+vel = 0.006 * (dist * dist) + 1.5, was found to be smoother, more gradual. This is implemented in the decelerate_waypoints function of waypoint_updater.py, with the square root function commented out.
 
-Once the waypoint velocities are set, braking behavior can then be determined by if the velocity error (same as the throttle calculation) is a negative value. This value being negative means that the car is moving
+## Braking
+
+Braking is under the twist_controller.py file within the control function.
+
+Once the waypoint velocities are set, braking behavior can then be determined if the velocity error (same as the throttle calculation) is a negative value. This value being negative means that the car is moving
 at a higher velocity than the waypoint's desired velocity, so the controller will apply braking force.
+Throttle is set to 0.
+Braking force is determined by the torque calculated from the vehicle mass * wheel radius * deceleration. 
+The deceleration is the velocity error up to the maximum deceleration set in dbw.launch at -1 m/s per second.
+Vehicle_mass of 1736.35 kg and wheel_radius of 0.2413 meters are also in the dbw.launch file. 
+
+Once the car is stopped at the red light, throttle is set to 0. 
+The brakes are set at 400 Nm braking torque as specified in the walkthrough to keep the car stopped. 
+This braking torque comes from the vehicle_mass * wheel_radius * accel_limit (419 Nm actual)
+
+## Acceleration
+
+When the light turns green, the car accelerates at 1 m/s each second as set in dbw.launch for accel_limit.
