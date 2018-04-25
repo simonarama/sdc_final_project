@@ -7,7 +7,7 @@ Project: Programming a Real Self-Driving Car
 * Members
     * David G (djg9610@gmail.com)
     * David Simon (simonarama@yahoo.com)
-    * Guillermo Gómez (ggomezbella@gmail.com)
+    * Guillermo GÃ³mez (ggomezbella@gmail.com)
     * Liheng Chen (liheng@freenet.de)
 
 # Project Result Videos
